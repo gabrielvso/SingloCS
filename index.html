@@ -479,7 +479,56 @@
   .vcm-pill:hover { border-color: rgba(0,144,155,0.4); color: var(--text); }
   .vcm-pill.selected { background: rgba(0,144,155,0.2); border-color: var(--accent); color: var(--accent2); box-shadow: 0 0 0 1px rgba(0,144,155,0.3); }
 
-  /* ── PRICE TABLE ── */
+  /* ── TOOLTIP ── */
+  .has-tooltip { position: relative; }
+
+  .q-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    background: rgba(0,20,24,0.97);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0,191,204,0.25);
+    border-radius: 10px;
+    padding: 10px 14px;
+    max-width: 280px;
+    font-size: 0.75rem;
+    line-height: 1.55;
+    color: #c8e8ec;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    pointer-events: none;
+    white-space: pre-wrap;
+  }
+
+  .q-tooltip.visible { display: block; }
+
+  .info-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; min-width: 16px;
+    border-radius: 50%;
+    background: rgba(0,144,155,0.2);
+    border: 1px solid rgba(0,144,155,0.35);
+    color: var(--accent2);
+    font-size: 0.6rem; font-weight: 700;
+    cursor: help;
+    margin-left: 6px;
+    transition: background 0.2s;
+    vertical-align: middle;
+    line-height: 1;
+  }
+
+  .info-icon:hover { background: rgba(0,144,155,0.4); }
+
+  /* ── TREE TABLE ROWS ── */
+  .price-table tr.tree-level-0 td.td-name { font-weight: 700; color: #fff; }
+  .price-table tr.tree-level-1 td.td-name { font-weight: 500; color: var(--text-dim); padding-left: 28px; font-size: 0.83rem; }
+  .price-table tr.tree-level-2 td.td-name { font-weight: 400; color: rgba(232,244,245,0.4); padding-left: 48px; font-size: 0.8rem; }
+
+  .price-table tr.tree-level-1 { background: rgba(0,0,0,0.08); }
+  .price-table tr.tree-level-2 { background: rgba(0,0,0,0.14); }
+
+  .price-table tr.tree-no-price td { opacity: 0.6; }
+  .price-table tr.tree-no-price .item-check { opacity: 0.3; pointer-events: none; }
   .price-table-wrapper {
     background: var(--glass);
     backdrop-filter: blur(20px);
@@ -1384,149 +1433,301 @@ const DATA = {
   quod: {
     title: 'Quod',
     vcms: {
-      'Avulso': { margin: 300, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:8.78},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:7.14},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:26.05},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:13.30},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:16.20},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:5.69},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:5.69},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.97},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:4.90},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:4.01},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:5.46},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:2.94},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:5.46},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:5.46},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:4.29},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:6.44},
+      'Avulso': { margin: 300, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:8.78, tooltip:'Consulta completa de CNPJ. Inclui: Módulo Cadastral PJ, Módulo Pendências Financeiras, Módulo Flag de Restritivos e Score PJ.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais do CNPJ, quadro societário e participações em empresas.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos vinculados ao CNPJ.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag indicando existência de restrições (Consta / Nada Consta).'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CNPJ.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:7.14, tooltip:'Consulta completa de CPF. Inclui: Módulo Cadastral PF, Módulo Flag, Módulo Flag Detalhe e Módulo Score.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Nome, data de nascimento, nome da mãe, situação cadastral, sexo e outros dados cadastrais.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências Financeiras: Consta/Nada Consta. Consultas: Consta/Nada Consta.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências financeiras detalhadas com CNPJ, valor, etc. Histórico de consultas detalhado com data.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CPF, indicadores de pontualidade e relacionamento.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:26.05, tooltip:'Produto completo Verifiq PJ. Inclui os 4 módulos: Cadastral, Restritivo, Analítico e Comportamental.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:5.69, tooltip:'Dados Cadastrais Completos, Quadro Societário e Participações em Empresas. Inclui razão social, CNAE, NIRE, endereço, porte, capital social, sócios, flags de offshore e cadastro positivo, certidões e muito mais.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Razão Social, Nome Fantasia, Status CNPJ, Natureza Jurídica, Data Fundação, CNAE Primário/Secundário, NIRE, filiais por estado, nº funcionários, endereço/telefone/e-mail, Simples Nacional, Inscrição Estadual, links para certidões, flag Offshore, flag Cadastro Positivo, Porte.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Capital Social, Nome do Sócio, Status CNPJ/CPF, Documento do Sócio, Participação Societária, Função do Administrador, Flag de Restritivo, Data de Entrada, Assinante pela Empresa.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'CNPJ da empresa, Razão Social, Status do CNPJ, Percentual de participação, Data de entrada na sociedade, Data da última atualização.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:5.69, tooltip:'Pendências Financeiras, Ações Judiciais (até 10 anos), Participação em RJ/Falências, CCF, Protestos SP e Histórico de Consultas.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações e ações judiciais até 10 anos atrás, participações em recuperações judiciais e falências, cheques sem fundos, protestos (somente SP).'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Data da consulta, volume de consultas por mês, CNPJ e Razão Social, Segmento da empresa consultante.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:13.30, tooltip:'Pool de soluções analíticas Quod: Score PJ + Boletos, Grau de Atividade 2.0, Faturamento Presumido, Limite de Crédito, Gasto Estimado, Inadimplência e +Negócio PJ.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:2.94, tooltip:'Score PJ e Score PJ com Boletos. Pontuação de crédito da empresa.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:5.46, tooltip:'Faturamento Presumido 2.0 — estimativa do faturamento da empresa com base em dados comportamentais.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:5.46, tooltip:'Limite de Crédito PJ sugerido com base no perfil financeiro da empresa.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:5.46, tooltip:'Gasto Estimado PJ 2.0 — estimativa de gastos da empresa com fornecedores.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.97, tooltip:'Indicador de probabilidade de inadimplência futura da empresa.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:4.90, tooltip:'Indicador de propensão a novos negócios e expansão comercial da empresa.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:4.01, tooltip:'Grau de Atividade de Empresas 2.0 — mede o nível de atividade econômica da empresa.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:16.20, tooltip:'Informações do Cadastro Positivo: relacionamento com o mercado, endividamento, pontualidade, histórico de pagamentos e análise setorial. 100% dados de Instituições Financeiras.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Movimentação de Contratos Financeiros, Financiamentos, Empréstimos, Consórcios. Abertura dos indicadores do Cadastro Positivo em faixas de valores e quantidade. Análise do comportamento de pagamento com IFs.'},
+          ]},
+        ]},
       ]},
-      '500': { margin: 450, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:12.07},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:9.82},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:35.82},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:18.29},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:22.27},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:7.83},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:7.83},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:5.46},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:6.74},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:5.52},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:7.51},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:4.04},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:7.51},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:7.51},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:5.91},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:8.86},
+      '500': { margin: 450, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:12.07, tooltip:'Consulta completa de CNPJ. Inclui: Módulo Cadastral PJ, Pendências Financeiras, Flag de Restritivos e Score PJ.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais do CNPJ, quadro societário e participações em empresas.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos vinculados ao CNPJ.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag indicando existência de restrições (Consta / Nada Consta).'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CNPJ.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:9.82, tooltip:'Consulta completa de CPF. Inclui: Módulo Cadastral PF, Flag, Flag Detalhe e Score.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Nome, data de nascimento, nome da mãe, situação cadastral, sexo e outros dados cadastrais.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências Financeiras: Consta/Nada Consta. Consultas: Consta/Nada Consta.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências financeiras detalhadas com CNPJ, valor, etc. Histórico de consultas detalhado com data.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CPF, indicadores de pontualidade e relacionamento.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:35.82, tooltip:'Produto completo Verifiq PJ. Inclui os 4 módulos: Cadastral, Restritivo, Analítico e Comportamental.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:7.83, tooltip:'Dados Cadastrais Completos, Quadro Societário e Participações em Empresas.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Razão Social, Nome Fantasia, Status CNPJ, Natureza Jurídica, Data Fundação, CNAE, NIRE, filiais, funcionários, endereço, Simples, Inscrição Estadual, certidões, flag Offshore, Cadastro Positivo, Porte.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Capital Social, Nome do Sócio, Status CNPJ/CPF, Documento, Participação, Função, Flag Restritivo, Data Entrada, Assinante.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'CNPJ da empresa, Razão Social, Status CNPJ, Percentual de participação, Datas de entrada e atualização.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:7.83, tooltip:'Pendências Financeiras, Ações Judiciais, RJ/Falências, CCF, Protestos SP e Histórico de Consultas.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações e ações judiciais até 10 anos atrás, participações em RJ e falências, cheques sem fundos, protestos (SP).'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Data, volume mensal, CNPJ, Razão Social e segmento da empresa consultante.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:18.29, tooltip:'Score PJ + Boletos, Grau de Atividade 2.0, Faturamento Presumido, Limite de Crédito, Gasto Estimado, Inadimplência e +Negócio PJ.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:4.04, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:7.51, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:7.51, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:7.51, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:5.46, tooltip:'Indicador de probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:6.74, tooltip:'Indicador de propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:5.52, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:22.27, tooltip:'Cadastro Positivo: relacionamento, endividamento, pontualidade, histórico de pagamentos e análise setorial. 100% dados de IFs.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Movimentação de Contratos Financeiros, Financiamentos, Empréstimos, Consórcios. Indicadores do Cadastro Positivo em faixas de valores.'},
+          ]},
+        ]},
       ]},
-      '1000': { margin: 400, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:10.97},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:8.93},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:32.56},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:16.63},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:20.25},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:7.12},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:7.12},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:4.96},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:6.13},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:5.02},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:6.83},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:3.68},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:6.83},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:6.83},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:5.37},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:8.05},
+      '1000': { margin: 400, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:10.97, tooltip:'Consulta completa de CNPJ. Inclui: Módulo Cadastral PJ, Pendências Financeiras, Flag de Restritivos e Score PJ.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais do CNPJ, quadro societário e participações em empresas.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos vinculados ao CNPJ.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag indicando existência de restrições (Consta / Nada Consta).'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CNPJ.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:8.93, tooltip:'Consulta completa de CPF. Inclui: Módulo Cadastral PF, Flag, Flag Detalhe e Score.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Nome, data de nascimento, nome da mãe, situação cadastral, sexo e outros dados cadastrais.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências Financeiras: Consta/Nada Consta. Consultas: Consta/Nada Consta.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências financeiras detalhadas com CNPJ, valor, etc. Histórico de consultas detalhado.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CPF, indicadores de pontualidade e relacionamento.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:32.56, tooltip:'Produto completo Verifiq PJ com os 4 módulos: Cadastral, Restritivo, Analítico e Comportamental.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:7.12, tooltip:'Dados Cadastrais Completos, Quadro Societário e Participações em Empresas.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Razão Social, Nome Fantasia, Status CNPJ, Natureza Jurídica, Data Fundação, CNAE, NIRE, filiais, funcionários, endereço, Simples, Inscrição Estadual, certidões, flags, Porte.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Capital Social, Sócios, Status, Participação, Função, Flag Restritivo, Data Entrada, Assinante.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'CNPJ, Razão Social, Status, Percentual de participação, Datas de entrada e atualização.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:7.12, tooltip:'Negativações, Ações Judiciais, RJ/Falências, CCF, Protestos SP e Histórico de Consultas.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações e ações judiciais até 10 anos, RJ e falências, cheques sem fundos, protestos SP.'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Data, volume mensal, CNPJ, Razão Social e segmento consultante.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:16.63, tooltip:'Score PJ + Boletos, Grau de Atividade 2.0, Faturamento Presumido, Limite de Crédito, Gasto Estimado, Inadimplência e +Negócio PJ.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:3.68, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:6.83, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:6.83, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:6.83, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:4.96, tooltip:'Probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:6.13, tooltip:'Propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:5.02, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:20.25, tooltip:'Cadastro Positivo: relacionamento, endividamento, pontualidade, histórico de pagamentos e análise setorial.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Contratos Financeiros, Financiamentos, Empréstimos, Consórcios. Indicadores do Cadastro Positivo em faixas de valores.'},
+          ]},
+        ]},
       ]},
-      '2500': { margin: 350, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:9.87},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:8.03},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:29.30},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:14.97},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:18.22},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:6.41},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:6.41},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:4.46},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:5.51},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:4.52},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:6.14},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:3.31},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:6.14},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:6.14},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:4.83},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:7.25},
+      '2500': { margin: 350, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:9.87, tooltip:'Consulta completa de CNPJ com 4 módulos inclusos.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais do CNPJ, quadro societário e participações.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag Consta / Nada Consta.'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CNPJ.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:8.03, tooltip:'Consulta completa de CPF com 4 módulos inclusos.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais completos do CPF.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Flags de pendências e consultas.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências e consultas detalhadas.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Score e indicadores de pontualidade.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:29.30, tooltip:'Verifiq Completo com os 4 módulos.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:6.41, tooltip:'Dados Cadastrais, Quadro Societário e Participações.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Informações completas do CNPJ.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Sócios, participações e administradores.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'Empresas onde o CNPJ tem participação.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:6.41, tooltip:'Negativações, Ações Judiciais, RJ/Falências, CCF, Protestos SP.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações até 10 anos, RJ, falências, CCF, protestos SP.'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Histórico detalhado de quem consultou o CNPJ.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:14.97, tooltip:'Score PJ, Grau de Atividade, Faturamento Presumido, Limite de Crédito, Gasto Estimado, Inadimplência, +Negócio.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:3.31, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:6.14, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:6.14, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:6.14, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:4.46, tooltip:'Probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:5.51, tooltip:'Propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:4.52, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:18.22, tooltip:'Cadastro Positivo: relacionamento, endividamento, pontualidade, pagamentos e análise setorial.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Contratos Financeiros, Financiamentos, Empréstimos, Consórcios. Indicadores do Cadastro Positivo.'},
+          ]},
+        ]},
       ]},
-      '5000': { margin: 300, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:8.78},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:7.14},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:26.05},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:13.30},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:16.20},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:5.69},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:5.69},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.97},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:4.90},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:4.01},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:5.46},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:2.94},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:5.46},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:5.46},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:4.29},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:6.44},
+      '5000': { margin: 300, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:8.78, tooltip:'Consulta completa de CNPJ com 4 módulos inclusos.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais do CNPJ, quadro societário e participações.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag Consta / Nada Consta.'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito do CNPJ.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:7.14, tooltip:'Consulta completa de CPF com 4 módulos inclusos.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais completos do CPF.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Flags de pendências e consultas.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências e consultas detalhadas.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Score e indicadores de pontualidade.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:26.05, tooltip:'Verifiq Completo com os 4 módulos.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:5.69, tooltip:'Dados Cadastrais, Quadro Societário e Participações.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Informações completas do CNPJ.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Sócios, participações e administradores.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'Empresas onde o CNPJ tem participação.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:5.69, tooltip:'Negativações, Ações Judiciais, RJ/Falências, CCF, Protestos SP.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações até 10 anos, RJ, falências, CCF, protestos SP.'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Histórico detalhado de consultas ao CNPJ.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:13.30, tooltip:'Score PJ, Grau de Atividade, Faturamento Presumido, Limite de Crédito, Gasto Estimado, Inadimplência, +Negócio.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:2.94, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:5.46, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:5.46, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:5.46, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.97, tooltip:'Probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:4.90, tooltip:'Propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:4.01, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:16.20, tooltip:'Cadastro Positivo: relacionamento, endividamento, pontualidade, pagamentos e análise setorial.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Contratos Financeiros, Financiamentos, Empréstimos, Consórcios. Indicadores do Cadastro Positivo.'},
+          ]},
+        ]},
       ]},
-      '7500': { margin: 275, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:8.23},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:6.70},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:24.42},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:12.47},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:15.19},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:5.34},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:5.34},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.72},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:4.60},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:3.76},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:5.12},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:2.76},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:5.12},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:5.12},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:4.03},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:6.04},
+      '7500': { margin: 275, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:8.23, tooltip:'Consulta completa de CNPJ com 4 módulos inclusos.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais, quadro societário e participações.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag Consta / Nada Consta.'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:6.70, tooltip:'Consulta completa de CPF com 4 módulos inclusos.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais completos.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Flags de pendências e consultas.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências e consultas detalhadas.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Score e indicadores de pontualidade.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:24.42, tooltip:'Verifiq Completo com os 4 módulos.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:5.34, tooltip:'Dados Cadastrais, Quadro Societário e Participações.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Informações completas do CNPJ.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Sócios, participações e administradores.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'Empresas onde o CNPJ tem participação.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:5.34, tooltip:'Negativações, Ações Judiciais, RJ/Falências, CCF, Protestos SP.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações até 10 anos, RJ, falências, CCF, protestos SP.'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Histórico detalhado de consultas.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:12.47, tooltip:'Score PJ, Grau de Atividade, Faturamento Presumido, Limite, Gasto, Inadimplência, +Negócio.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:2.76, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:5.12, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:5.12, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:5.12, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.72, tooltip:'Probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:4.60, tooltip:'Propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:3.76, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:15.19, tooltip:'Cadastro Positivo completo com análise setorial.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Contratos Financeiros, Financiamentos, Empréstimos, Consórcios.'},
+          ]},
+        ]},
       ]},
-      '10000': { margin: 250, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:7.68},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:6.25},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:22.79},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:11.64},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:14.17},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:4.98},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:4.98},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.47},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:4.29},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:3.51},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:4.78},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:2.57},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:4.78},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:4.78},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:3.76},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:5.64},
+      '10000': { margin: 250, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:7.68, tooltip:'Consulta completa de CNPJ com 4 módulos inclusos.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais, quadro societário e participações.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag Consta / Nada Consta.'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:6.25, tooltip:'Consulta completa de CPF com 4 módulos inclusos.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais completos.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Flags de pendências e consultas.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências e consultas detalhadas.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Score e indicadores de pontualidade.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:22.79, tooltip:'Verifiq Completo com os 4 módulos.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:4.98, tooltip:'Dados Cadastrais, Quadro Societário e Participações.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Informações completas do CNPJ.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Sócios, participações e administradores.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'Empresas onde o CNPJ tem participação.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:4.98, tooltip:'Negativações, Ações Judiciais, RJ/Falências, CCF, Protestos SP.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações até 10 anos, RJ, falências, CCF, protestos SP.'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Histórico detalhado de consultas.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:11.64, tooltip:'Score PJ, Grau de Atividade, Faturamento Presumido, Limite, Gasto, Inadimplência, +Negócio.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:2.57, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:4.78, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:4.78, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:4.78, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:3.47, tooltip:'Probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:4.29, tooltip:'Propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:3.51, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:14.17, tooltip:'Cadastro Positivo completo com análise setorial.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Contratos Financeiros, Financiamentos, Empréstimos, Consórcios.'},
+          ]},
+        ]},
       ]},
-      '15000': { margin: 200, items: [
-        {name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:6.58},
-        {name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:5.36},
-        {name:'Quod Verifiq Completo - Score PJ Integral', supplier:'QUOD', cost:5.58, price:19.54},
-        {name:'Quod Verifiq Módulo Analytics Completo', supplier:'QUOD', cost:2.85, price:9.98},
-        {name:'Quod Verifiq Módulo Comportamental', supplier:'QUOD', cost:3.47, price:12.15},
-        {name:'Quod Verifiq Módulo Cadastral', supplier:'QUOD', cost:1.22, price:4.27},
-        {name:'Quod Verifiq Módulo Restrições e Passagens', supplier:'QUOD', cost:1.22, price:4.27},
-        {name:'Quod Verifiq Módulo Analytics - Inadimplência PJ', supplier:'QUOD', cost:0.85, price:2.98},
-        {name:'Quod Verifiq Módulo Analytics - + Negócio PJ', supplier:'QUOD', cost:1.05, price:3.68},
-        {name:'Quod Verifiq Módulo Analytics - Grau de Atividade', supplier:'QUOD', cost:0.86, price:3.01},
-        {name:'Quod Verifiq Módulo Analytics - Faturamento Presumido', supplier:'QUOD', cost:1.17, price:4.10},
-        {name:'Quod Verifiq Módulo Analytics - Score PJ', supplier:'QUOD', cost:0.63, price:2.21},
-        {name:'Quod Verifiq Módulo Analytics - Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:4.10},
-        {name:'Quod Verifiq Módulo Analytics - Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:4.10},
-        {name:'Quod Gasto Estimado PF 2 + Faixa de Gasto', supplier:'QUOD', cost:0.92, price:3.22},
-        {name:'Quod Gasto Estimado PF 2 + Renda Presumida 2ª Gen.', supplier:'QUOD', cost:1.38, price:4.83},
+      '15000': { margin: 200, tree: [
+        { id:'cpj', level:0, name:'Quod Consulta PJ Completa', supplier:'QUOD', cost:1.88, price:6.58, tooltip:'Consulta completa de CNPJ com 4 módulos inclusos.', children:[
+          { id:'cpj-cad', level:1, name:'↳ Módulo Cadastral PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais, quadro societário e participações.'},
+          { id:'cpj-pen', level:1, name:'↳ Módulo Pendências Financeiras PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações, ações judiciais e protestos.'},
+          { id:'cpj-flag', level:1, name:'↳ Módulo Flag de Restritivos PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Flag Consta / Nada Consta.'},
+          { id:'cpj-score', level:1, name:'↳ Módulo Score PJ', supplier:'QUOD', cost:null, price:null, tooltip:'Pontuação de crédito.'},
+        ]},
+        { id:'cpf', level:0, name:'Quod Consulta PF Completa', supplier:'QUOD', cost:1.53, price:5.36, tooltip:'Consulta completa de CPF com 4 módulos inclusos.', children:[
+          { id:'cpf-cad', level:1, name:'↳ Módulo Cadastral PF', supplier:'QUOD', cost:null, price:null, tooltip:'Dados cadastrais completos.'},
+          { id:'cpf-flag', level:1, name:'↳ Módulo Flag PF', supplier:'QUOD', cost:null, price:null, tooltip:'Flags de pendências e consultas.'},
+          { id:'cpf-flagdet', level:1, name:'↳ Módulo Flag Detalhe PF', supplier:'QUOD', cost:null, price:null, tooltip:'Pendências e consultas detalhadas.'},
+          { id:'cpf-score', level:1, name:'↳ Módulo Score PF', supplier:'QUOD', cost:null, price:null, tooltip:'Score e indicadores de pontualidade.'},
+        ]},
+        { id:'verifiq', level:0, name:'Quod Verifiq Completo', supplier:'QUOD', cost:5.58, price:19.54, tooltip:'Verifiq Completo com os 4 módulos.', children:[
+          { id:'vcad', level:1, name:'↳ Módulo Cadastral', supplier:'QUOD', cost:1.22, price:4.27, tooltip:'Dados Cadastrais, Quadro Societário e Participações.', children:[
+            { id:'vcad-dados', level:2, name:'   ↳ Dados Cadastrais', supplier:'QUOD', cost:null, price:null, tooltip:'Informações completas do CNPJ.'},
+            { id:'vcad-qs', level:2, name:'   ↳ Quadro Societário', supplier:'QUOD', cost:null, price:null, tooltip:'Sócios, participações e administradores.'},
+            { id:'vcad-part', level:2, name:'   ↳ Participações Societárias', supplier:'QUOD', cost:null, price:null, tooltip:'Empresas onde o CNPJ tem participação.'},
+          ]},
+          { id:'vrest', level:1, name:'↳ Módulo Restritivo', supplier:'QUOD', cost:1.22, price:4.27, tooltip:'Negativações, Ações Judiciais, RJ/Falências, CCF, Protestos SP.', children:[
+            { id:'vrest-neg', level:2, name:'   ↳ Negativações & Ações Judiciais', supplier:'QUOD', cost:null, price:null, tooltip:'Negativações até 10 anos, RJ, falências, CCF, protestos SP.'},
+            { id:'vrest-cons', level:2, name:'   ↳ Histórico de Consultas', supplier:'QUOD', cost:null, price:null, tooltip:'Histórico detalhado de consultas.'},
+          ]},
+          { id:'vana', level:1, name:'↳ Módulo Analítico', supplier:'QUOD', cost:2.85, price:9.98, tooltip:'Score PJ, Grau de Atividade, Faturamento Presumido, Limite, Gasto, Inadimplência, +Negócio.', children:[
+            { id:'vana-score', level:2, name:'   ↳ Score PJ', supplier:'QUOD', cost:0.63, price:2.21, tooltip:'Score PJ e Score PJ com Boletos.'},
+            { id:'vana-fat', level:2, name:'   ↳ Faturamento Presumido', supplier:'QUOD', cost:1.17, price:4.10, tooltip:'Faturamento Presumido 2.0.'},
+            { id:'vana-lim', level:2, name:'   ↳ Limite de Crédito PJ', supplier:'QUOD', cost:1.17, price:4.10, tooltip:'Limite de Crédito PJ sugerido.'},
+            { id:'vana-gas', level:2, name:'   ↳ Gasto Estimado PJ', supplier:'QUOD', cost:1.17, price:4.10, tooltip:'Gasto Estimado PJ 2.0.'},
+            { id:'vana-inad', level:2, name:'   ↳ Inadimplência PJ', supplier:'QUOD', cost:0.85, price:2.98, tooltip:'Probabilidade de inadimplência.'},
+            { id:'vana-neg', level:2, name:'   ↳ + Negócio PJ 2.0', supplier:'QUOD', cost:1.05, price:3.68, tooltip:'Propensão a novos negócios.'},
+            { id:'vana-grau', level:2, name:'   ↳ Grau de Atividade 2.0', supplier:'QUOD', cost:0.86, price:3.01, tooltip:'Grau de Atividade de Empresas 2.0.'},
+          ]},
+          { id:'vcomp', level:1, name:'↳ Módulo Comportamental', supplier:'QUOD', cost:3.47, price:12.15, tooltip:'Cadastro Positivo completo com análise setorial.', children:[
+            { id:'vcomp-det', level:2, name:'   ↳ Detalhes Comportamentais', supplier:'QUOD', cost:null, price:null, tooltip:'Contratos Financeiros, Financiamentos, Empréstimos, Consórcios.'},
+          ]},
+        ]},
       ]},
     }
   }
@@ -1709,7 +1910,7 @@ function renderVcmProduct(key) {
   `;
 }
 
-// ── TABLE ROW CHECK ──
+// ── TABLE ROW CHECK (standard) ──
 function toggleRowCheck(key, vcm, idx, el) {
   const itemKey = vcm + '-' + idx;
   selections[key].items[itemKey] = !selections[key].items[itemKey];
@@ -1717,6 +1918,45 @@ function toggleRowCheck(key, vcm, idx, el) {
   const row = el.closest('tr');
   row.classList.toggle('row-checked', selections[key].items[itemKey]);
   updateProposalBar();
+}
+
+// ── TABLE ROW CHECK (Quod tree) ──
+function toggleRowCheckQuod(key, vcm, nodeId, el) {
+  const itemKey = vcm + '-' + nodeId;
+  selections[key].items[itemKey] = !selections[key].items[itemKey];
+  el.classList.toggle('checked', selections[key].items[itemKey]);
+  el.closest('tr').classList.toggle('row-checked', selections[key].items[itemKey]);
+  updateProposalBar();
+}
+
+// ── TOOLTIP ENGINE ──
+let _tipEl = null;
+function initTooltips() {
+  if (!_tipEl) {
+    _tipEl = document.createElement('div');
+    _tipEl.className = 'q-tooltip';
+    document.body.appendChild(_tipEl);
+  }
+  document.querySelectorAll('.info-icon[data-tip]').forEach(icon => {
+    icon.addEventListener('mouseenter', e => {
+      _tipEl.textContent = icon.dataset.tip;
+      _tipEl.classList.add('visible');
+      positionTip(e);
+    });
+    icon.addEventListener('mousemove', positionTip);
+    icon.addEventListener('mouseleave', () => _tipEl.classList.remove('visible'));
+  });
+}
+function positionTip(e) {
+  if (!_tipEl) return;
+  const gap = 12;
+  let x = e.clientX + gap;
+  let y = e.clientY + gap;
+  const rect = _tipEl.getBoundingClientRect();
+  if (x + rect.width > window.innerWidth - 8) x = e.clientX - rect.width - gap;
+  if (y + rect.height > window.innerHeight - 8) y = e.clientY - rect.height - gap;
+  _tipEl.style.left = x + 'px';
+  _tipEl.style.top = y + 'px';
 }
 
 function setVcm(vcm, scroll = true) {
@@ -1727,11 +1967,86 @@ function setVcm(vcm, scroll = true) {
     p.classList.toggle('selected', p.textContent.trim() === (VCM_LABELS[vcm] || vcm));
   });
   const data = DATA[currentProduct].vcms[vcm];
-
-  const avgPrice = data.items.reduce((s, i) => s + i.price, 0) / data.items.length;
-  const avgCost = data.items.reduce((s, i) => s + i.cost, 0) / data.items.length;
-
   const key = currentProduct;
+
+  // ── QUOD: tree-based rendering ──
+  if (data.tree) {
+    // Flatten tree for display
+    const rows = [];
+    function flattenTree(nodes, parentId) {
+      nodes.forEach(node => {
+        rows.push({ ...node, _parentId: parentId || null });
+        if (node.children) flattenTree(node.children, node.id);
+      });
+    }
+    flattenTree(data.tree, null);
+
+    const priceable = rows.filter(r => r.price !== null && r.price !== undefined);
+    const avgPrice = priceable.length ? priceable.reduce((s,r) => s + r.price, 0) / priceable.length : 0;
+
+    let tbody = rows.map(row => {
+      const hasPrice = row.price !== null && row.price !== undefined;
+      const hasCost = row.cost !== null && row.cost !== undefined;
+      const margin = hasPrice && hasCost ? ((row.price - row.cost) / row.cost * 100).toFixed(0) : null;
+      const itemKey = vcm + '-' + row.id;
+      const isChecked = !!selections[key].items[itemKey];
+      const canCheck = hasPrice; // only items with price can be selected
+
+      return `<tr class="tree-level-${row.level} ${isChecked ? 'row-checked' : ''} ${!hasPrice ? 'tree-no-price' : ''}">
+        <td class="td-check">
+          ${canCheck ? `<div class="item-check ${isChecked ? 'checked' : ''}" onclick="toggleRowCheckQuod('${key}','${vcm}','${row.id}',this)" title="Selecionar para proposta"></div>` : ''}
+        </td>
+        <td class="td-name has-tooltip">
+          ${row.name}
+          ${row.tooltip ? `<span class="info-icon" data-tip="${row.tooltip.replace(/"/g,'&quot;')}">i</span>` : ''}
+        </td>
+        <td class="td-supplier">${row.supplier}</td>
+        <td>${hasPrice ? `<span class="price-tag">${fmt(row.price)}</span>` : '<span style="color:var(--text-dim);font-size:0.78rem;">incluso</span>'}</td>
+        <td>${margin !== null ? `<span class="margin-badge">${margin}%</span>` : '<span style="color:var(--text-dim);font-size:0.78rem;">—</span>'}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('table-area').innerHTML = `
+      <div class="price-table-wrapper">
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th class="td-check"></th>
+              <th>Produto / Módulo</th>
+              <th>Fornecedor</th>
+              <th>Venda</th>
+              <th>Margem</th>
+            </tr>
+          </thead>
+          <tbody>${tbody}</tbody>
+        </table>
+      </div>
+    `;
+
+    document.getElementById('summary-area').innerHTML = `
+      <div class="summary-card">
+        <div class="summary-item">
+          <div class="s-label">VCM Selecionado</div>
+          <div class="s-value" style="font-size:1.1rem">${VCM_LABELS[vcm] || vcm}</div>
+        </div>
+        <div class="summary-item">
+          <div class="s-label">Margem do Plano</div>
+          <div class="s-value orange">${data.margin}%</div>
+        </div>
+        <div class="summary-item">
+          <div class="s-label">Itens Disponíveis</div>
+          <div class="s-value" style="color:var(--text)">${rows.length}</div>
+        </div>
+      </div>
+    `;
+
+    initTooltips();
+    return;
+  }
+
+  // ── DEFAULT: flat item list ──
+  const avgPrice = data.items.reduce((s, i) => s + i.price, 0) / data.items.length;
+
   document.getElementById('table-area').innerHTML = `
     <div class="price-table-wrapper">
       <table class="price-table">
@@ -2073,20 +2388,42 @@ function openProposal() {
     const vcmData = DATA[k].vcms[vcm];
     if (!vcmData) return;
 
-    const checkedItems = vcmData.items.filter((item, idx) => !!itemSel[vcm + '-' + idx]);
-    if (checkedItems.length === 0) return;
-
     const sectionName = { quod: 'Quod', scr: 'SCR', serasa: 'Serasa' }[k];
     const vcmLabel = VCM_LABELS[vcm] || vcm;
     const consumoLabel = vcm === 'Avulso' ? '—' : vcmLabel;
     const consumoVal = vcm === 'Avulso' ? 0 : parseBRL(vcmLabel);
 
-    groups.push({
-      sectionLabel: `${sectionName} — VCM ${vcmLabel}`,
-      items: checkedItems.map(item => ({ name: item.name, price: fmt(item.price), isIlimitado: false })),
-      consumoLabel,
-      consumoVal
-    });
+    // Quod uses tree structure with string IDs
+    if (vcmData.tree) {
+      const checkedItems = [];
+      function collectChecked(nodes) {
+        nodes.forEach(node => {
+          const itemKey = vcm + '-' + node.id;
+          if (itemSel[itemKey] && node.price !== null && node.price !== undefined) {
+            checkedItems.push({ name: node.name.replace(/^[↳\s]+/, ''), price: fmt(node.price) });
+          }
+          if (node.children) collectChecked(node.children);
+        });
+      }
+      collectChecked(vcmData.tree);
+      if (checkedItems.length === 0) return;
+      groups.push({
+        sectionLabel: `${sectionName} — VCM ${vcmLabel}`,
+        items: checkedItems.map(item => ({ name: item.name, price: item.price, isIlimitado: false })),
+        consumoLabel,
+        consumoVal
+      });
+    } else {
+      // Standard flat list
+      const checkedItems = vcmData.items.filter((item, idx) => !!itemSel[vcm + '-' + idx]);
+      if (checkedItems.length === 0) return;
+      groups.push({
+        sectionLabel: `${sectionName} — VCM ${vcmLabel}`,
+        items: checkedItems.map(item => ({ name: item.name, price: fmt(item.price), isIlimitado: false })),
+        consumoLabel,
+        consumoVal
+      });
+    }
   });
 
   // ── Monitoramento ──
